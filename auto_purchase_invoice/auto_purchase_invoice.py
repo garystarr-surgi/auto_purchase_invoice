@@ -3,33 +3,44 @@ from erpnext.stock.doctype.purchase_receipt.purchase_receipt import make_purchas
 
 @frappe.whitelist()
 def auto_create_purchase_invoice(purchase_receipt_name):
+    """
+    Creates and submits a Purchase Invoice automatically when
+    Purchase Receipt reaches 'Putaway in Progress'.
+    """
+    # Get the Purchase Receipt
     pr = frappe.get_doc("Purchase Receipt", purchase_receipt_name)
 
+    # Guard: Only run on submitted receipts
     if pr.docstatus != 1:
         return "Purchase Receipt not submitted yet."
 
+    # Guard: Only run for correct workflow state
     if pr.workflow_state != "Putaway in Progress":
         return f"Workflow state is '{pr.workflow_state}', not 'Putaway in Progress'."
+
+    # Guard: Avoid duplicates
+    if pr.get("custom_pi_created"):
+        return "Purchase Invoice already created (custom flag set)."
 
     if frappe.db.exists("Purchase Invoice Item", {"purchase_receipt": pr.name}):
         return "Purchase Invoice already exists for this Purchase Receipt."
 
-    if pr.get("custom_pi_created"):
-        return "Custom PI flag set, skipping creation."
-
     try:
+        # Create Purchase Invoice using ERPNext mapper
         pi_doc = make_purchase_invoice(pr.name)
 
         if not pi_doc or not pi_doc.get("items"):
             frappe.throw("No items returned by Purchase Invoice mapper.")
 
+        # Insert and submit
         pi = frappe.get_doc(pi_doc)
         pi.insert(ignore_permissions=True)
         pi.submit()
 
+        # Mark as processed
         pr.db_set("custom_pi_created", 1)
-
         frappe.db.commit()
+
         return f"Purchase Invoice {pi.name} created successfully."
 
     except Exception as e:
