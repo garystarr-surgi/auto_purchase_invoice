@@ -1,8 +1,8 @@
-app_name = "auto_purchase_invoie"
+# hooks.py for Auto Purchase Invoice
+
+app_name = "auto_purchase_invoice"
 app_title = "Auto Purchase Invoice"
-app_publisher = "SurgiShop"
-app_description = "Auto creates Purchase Invoice
+app_publisher = "Gary Starr"
+app_description = "Auto creates Purchase Invoice when Purchase Receipt reaches Putaway in Progress"
 app_email = "gary.starr@surgishop.com"
-app_license = "MIT
-required_apps = ["frappe/erpnext"]
-required_frappe_version = ">=16.0.0"
+app_license = "MIT"
