@@ -1,8 +1,9 @@
 import frappe
-from erpnext.stock.doctype.purchase_receipt.purchase_receipt import make_purchase_invoice
+from auto_purchase_invoice.auto_purchase_invoice import auto_create_purchase_invoice
 
-@frappe.whitelist()
-def auto_create_purchase_invoice(purchase_receipt_name):
+# Call the function
+auto_create_purchase_invoice(doc.name)
+
     """
     Creates and submits a Purchase Invoice automatically when
     Purchase Receipt reaches 'Putaway in Progress'.
