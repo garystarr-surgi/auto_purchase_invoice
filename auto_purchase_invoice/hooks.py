@@ -1,5 +1,3 @@
-# hooks.py for Auto Purchase Invoice
-
 app_name = "auto_purchase_invoice"
 app_title = "Auto Purchase Invoice"
 app_publisher = "Gary Starr"
